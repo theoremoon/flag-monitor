@@ -21,6 +21,7 @@ type Dumper interface {
 
 type dumper struct {
 	File      *os.File
+	Filename  string
 	BufWriter *bufio.Writer
 	Writer    *pcapgo.Writer
 
@@ -40,7 +41,8 @@ func NewDumper(filename string, snaplen uint32, linktype layers.LinkType) (Dumpe
 		SnapLen:  snaplen,
 		LinkType: linktype,
 	}
-	dumper.initiateWriter(formatter.FormatString(time.Now()))
+	dumper.Filename = formatter.FormatString(time.Now())
+	dumper.initiateWriter()
 	return &dumper, nil
 }
 
@@ -61,12 +63,11 @@ func (d *dumper) Flush() error {
 
 func (d *dumper) Close() error {
 	d.Flush()
-	filename := d.File.Name()
 	if err := d.File.Close(); err != nil {
 		return xerrors.Errorf(": %w", err)
 	}
 	if d.CloseCallback != nil {
-		d.CloseCallback(filename)
+		d.CloseCallback(d.Filename)
 	}
 	return nil
 }
@@ -76,8 +77,8 @@ func (d *dumper) SetCloseCallback(f func(string)) {
 }
 
 /// ファイル作ってWriterの初期化をする
-func (d *dumper) initiateWriter(filename string) error {
-	f, err := os.Create(filename)
+func (d *dumper) initiateWriter() error {
+	f, err := os.Create(d.Filename)
 	if err != nil {
 		return xerrors.Errorf(": %w", err)
 	}

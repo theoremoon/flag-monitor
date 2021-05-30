@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -84,15 +85,12 @@ func run() error {
 	// sessionをflushするときに呼んでflagが含まれていたらdumpする
 	flushHandler := func(sess *session.Session) {
 		// パターンを探す
-		flagIncluded := false
+		buf := bytes.NewBuffer(make([]byte, 0, 1024))
 		for _, p := range sess.Packets {
 			tcp := p.Layer(layers.LayerTypeTCP).(*layers.TCP)
-			if pattern.Match(tcp.Payload) {
-				flagIncluded = true
-				break
-			}
+			buf.Write(tcp.Payload)
 		}
-		if !flagIncluded {
+		if !pattern.Match(buf.Bytes()) {
 			return
 		}
 
