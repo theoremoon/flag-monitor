@@ -36,10 +36,10 @@ func run() error {
 	}
 
 	flag.StringVar(&iface, "i", "", "network interface to capture the packet")
-	flag.StringVar(&pcapFmt, "o", "", "filename to dump pcap. strftime format is allowed")
+	flag.StringVar(&pcapFmt, "w", "", "filename to dump pcap. strftime format is allowed")
 	flag.StringVar(&rotateIntervalStr, "d", "1h", "duration of rotating pcap file dump")
 	flag.StringVar(&rotateFunc, "z", "", "post rotate command")
-	flag.StringVar(&flagPcapFmt, "flag-o", "", "filename to dump flag-included pcap. strftime format is allowed")
+	flag.StringVar(&flagPcapFmt, "flag-w", "", "filename to dump flag-included pcap. strftime format is allowed")
 	flag.StringVar(&sessionFlushIntervalStr, "flag-d", "5m", "interval of flushing session")
 	flag.StringVar(&flagRotateFunc, "flag-z", "", "post rotate command for flag file")
 	flag.StringVar(&patternStr, "flag", "", "regular expression")
